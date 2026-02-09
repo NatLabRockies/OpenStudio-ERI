@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
+# http://natlabrockies.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
 require 'msgpack'
 require 'time'
@@ -397,9 +397,6 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
     end
     if has_electricity_storage
       Model.add_output_meter(model, meter_name: 'ElectricStorage:ElectricityProduced', reporting_frequency: 'runperiod') # Used for error checking
-      if args[:include_timeseries_fuel_consumptions]
-        Model.add_output_meter(model, meter_name: 'ElectricStorage:ElectricityProduced', reporting_frequency: args[:timeseries_frequency])
-      end
 
       # Resilience
       if args[:include_annual_resilience] || args[:include_timeseries_resilience]
@@ -407,9 +404,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
         if args[:timeseries_frequency] != EPlus::TimeseriesFrequencyTimestep
           resilience_frequency = EPlus::TimeseriesFrequencyHourly
         end
-        Model.add_output_meter(model, meter_name: 'Electricity:Facility', reporting_frequency: resilience_frequency)
-        Model.add_output_meter(model, meter_name: 'ElectricityProduced:Facility', reporting_frequency: resilience_frequency)
-        Model.add_output_meter(model, meter_name: 'ElectricStorage:ElectricityProduced', reporting_frequency: resilience_frequency)
+        Model.add_output_meter(model, meter_name: Outputs::MeterCustomElectricityCritical, reporting_frequency: resilience_frequency)
         @resilience.values.each do |resilience|
           resilience.variables.each do |_sys_id, varkey, var|
             Model.add_output_variable(model, key_value: varkey, variable_name: var, reporting_frequency: resilience_frequency)
@@ -1075,21 +1070,14 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       keys = resilience.variables.select { |v| v[2] == vars[0] }.map { |v| v[1] }
       batt_soc = get_report_variable_data_timeseries(keys, vars, 1, 0, resilience_frequency)
 
-      vars = ['Other Equipment Electricity Energy']
-      keys = resilience.variables.select { |v| v[2] == vars[0] }.map { |v| v[1] }
-      batt_loss = get_report_variable_data_timeseries(keys, vars, UnitConversions.convert(1.0, 'J', 'kWh'), 0, resilience_frequency)
-
       min_soc = elcd.minimumStorageStateofChargeFraction
       batt_kw = elcd.designStorageControlDischargePower.get / 1000.0
       batt_roundtrip_eff = elcs.dctoDCChargingEfficiency
       batt_kwh = elcs.additionalProperties.getFeatureAsDouble('UsableCapacity_kWh').get
 
       batt_soc_kwh = batt_soc.map { |soc| soc - min_soc }.map { |soc| soc * batt_kwh }
-      elec_prod = get_report_meter_data_timeseries(['ElectricityProduced:Facility'], UnitConversions.convert(1.0, 'J', 'kWh'), 0, resilience_frequency)
-      elec_stor = get_report_meter_data_timeseries(['ElectricStorage:ElectricityProduced'], UnitConversions.convert(1.0, 'J', 'kWh'), 0, resilience_frequency)
-      elec_prod = elec_prod.zip(elec_stor).map { |x, y| -1 * (x - y) }
-      elec = get_report_meter_data_timeseries(['Electricity:Facility'], UnitConversions.convert(1.0, 'J', 'kWh'), 0, resilience_frequency)
-      crit_load = elec.zip(elec_prod, batt_loss).map { |x, y, z| x + y + z }
+
+      crit_load = get_report_meter_data_timeseries([Outputs::MeterCustomElectricityCritical.upcase], UnitConversions.convert(1.0, 'J', 'kWh'), 0, resilience_frequency)
 
       resilience_timeseries = []
       n_timesteps = crit_load.size
@@ -1108,30 +1096,42 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
     end
 
     # Get zones of interest
-    zone_names = []
+    bldg_id_zone_name_map = {}
     @model.getThermalZones.each do |zone|
       next unless zone.floorArea > 1 # Skip e.g. plenum zone for duct model
 
-      zone_names << zone.name.to_s.upcase
+      zone_name = zone.name.to_s.upcase
+      bldg_id = nil
+      if @hpxml_bldgs.size > 1
+        bldg_id = zone.additionalProperties.getFeatureAsString('BuildingID').get
+      end
+      bldg_id_zone_name_map[bldg_id] = [] unless bldg_id_zone_name_map.keys.include?(bldg_id)
+      bldg_id_zone_name_map[bldg_id] << zone_name
     end
-    zone_names.sort!
+    bldg_id_zone_name_map = bldg_id_zone_name_map.sort_by { |k, v| [k, v] }.to_h
 
-    # Returns a user-friendly version of the object name for output.
+    # Returns a user-friendly version of bldg_id + object_name for output.
+    # UNITX will be stripped from the object_name, if it exists.
     #
+    # @param bldg_id [String or nil] The HPXML Building ID for the dwelling unit (if a whole SFA/MF building simulation)
     # @param object_name [String] OpenStudio object name
     # @return [String] Output name
-    def sanitize_name(object_name)
-      return object_name.gsub('_', ' ').split.map(&:capitalize).join(' ')
+    def sanitize_name(bldg_id, object_name)
+      sstrs = object_name.gsub('_', ' ').split
+      sstrs.delete(sstrs[0]) if sstrs[0].include?('UNIT')
+      return "#{bldg_id} #{sstrs.map(&:capitalize).join(' ')}".strip
     end
 
     # Zone temperatures
     if args[:include_timeseries_zone_temperatures]
 
-      zone_names.each do |zone_name|
-        @zone_temps[zone_name] = ZoneTemp.new
-        @zone_temps[zone_name].name = "Temperature: #{sanitize_name(zone_name)}"
-        @zone_temps[zone_name].timeseries_units = 'F'
-        @zone_temps[zone_name].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Air Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_temps[zone_name] = ZoneTemp.new
+          @zone_temps[zone_name].name = "Temperature: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_temps[zone_name].timeseries_units = 'F'
+          @zone_temps[zone_name].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Air Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+        end
       end
 
       # Scheduled temperatures
@@ -1143,7 +1143,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
 
           sch_name = schedule.name.to_s.upcase
           @zone_temps[sch_name] = ZoneTemp.new
-          @zone_temps[sch_name].name = "Temperature: #{sanitize_name(sch_name)}"
+          @zone_temps[sch_name].name = "Temperature: #{sanitize_name(nil, sch_name)}"
           @zone_temps[sch_name].timeseries_units = 'F'
           @zone_temps[sch_name].timeseries_output = get_report_variable_data_timeseries([sch_name], ['Schedule Value'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
 
@@ -1156,8 +1156,8 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       heated_zones.each do |heated_zone|
         var_name = 'Temperature: Heating Setpoint'
         if @hpxml_header.whole_sfa_or_mf_building_sim
-          unit_num = @model.getThermalZones.find { |z| z.name.to_s == heated_zone }.spaces[0].buildingUnit.get.additionalProperties.getFeatureAsInteger('unit_num').get
-          var_name = "Temperature: Unit#{unit_num} Heating Setpoint"
+          building_id = @model.getThermalZones.find { |z| z.name.to_s == heated_zone }.additionalProperties.getFeatureAsString('BuildingID').get
+          var_name = "Temperature: #{building_id} Heating Setpoint"
         end
         @zone_temps["#{heated_zone} Heating Setpoint"] = ZoneTemp.new
         @zone_temps["#{heated_zone} Heating Setpoint"].name = var_name
@@ -1170,8 +1170,8 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       cooled_zones.each do |cooled_zone|
         var_name = 'Temperature: Cooling Setpoint'
         if @hpxml_header.whole_sfa_or_mf_building_sim
-          unit_num = @model.getThermalZones.find { |z| z.name.to_s == cooled_zone }.spaces[0].buildingUnit.get.additionalProperties.getFeatureAsInteger('unit_num').get
-          var_name = "Temperature: Unit#{unit_num} Cooling Setpoint"
+          building_id = @model.getThermalZones.find { |z| z.name.to_s == cooled_zone }.additionalProperties.getFeatureAsString('BuildingID').get
+          var_name = "Temperature: #{building_id} Cooling Setpoint"
         end
         @zone_temps["#{cooled_zone} Cooling Setpoint"] = ZoneTemp.new
         @zone_temps["#{cooled_zone} Cooling Setpoint"].name = var_name
@@ -1184,43 +1184,53 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
     if args[:include_timeseries_zone_conditions]
 
       # Zone humidity ratios
-      zone_names.each do |zone_name|
-        @zone_conds["#{zone_name} Humidity Ratio"] = ZoneCond.new
-        @zone_conds["#{zone_name} Humidity Ratio"].name = "Humidity Ratio: #{sanitize_name(zone_name)}"
-        @zone_conds["#{zone_name} Humidity Ratio"].timeseries_units = 'fraction'
-        @zone_conds["#{zone_name} Humidity Ratio"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Air Humidity Ratio'], 1, 0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_conds["#{zone_name} Humidity Ratio"] = ZoneCond.new
+          @zone_conds["#{zone_name} Humidity Ratio"].name = "Humidity Ratio: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_conds["#{zone_name} Humidity Ratio"].timeseries_units = 'fraction'
+          @zone_conds["#{zone_name} Humidity Ratio"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Air Humidity Ratio'], 1, 0, args[:timeseries_frequency])
+        end
       end
 
       # Zone relative humidities
-      zone_names.each do |zone_name|
-        @zone_conds["#{zone_name} Relative Humidity"] = ZoneCond.new
-        @zone_conds["#{zone_name} Relative Humidity"].name = "Relative Humidity: #{sanitize_name(zone_name)}"
-        @zone_conds["#{zone_name} Relative Humidity"].timeseries_units = '%'
-        @zone_conds["#{zone_name} Relative Humidity"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Air Relative Humidity'], 1, 0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_conds["#{zone_name} Relative Humidity"] = ZoneCond.new
+          @zone_conds["#{zone_name} Relative Humidity"].name = "Relative Humidity: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_conds["#{zone_name} Relative Humidity"].timeseries_units = '%'
+          @zone_conds["#{zone_name} Relative Humidity"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Air Relative Humidity'], 1, 0, args[:timeseries_frequency])
+        end
       end
 
       # Zone dewpoint temperatures
-      zone_names.each do |zone_name|
-        @zone_conds["#{zone_name} Dewpoint Temperature"] = ZoneCond.new
-        @zone_conds["#{zone_name} Dewpoint Temperature"].name = "Dewpoint Temperature: #{sanitize_name(zone_name)}"
-        @zone_conds["#{zone_name} Dewpoint Temperature"].timeseries_units = 'F'
-        @zone_conds["#{zone_name} Dewpoint Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Air Dewpoint Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_conds["#{zone_name} Dewpoint Temperature"] = ZoneCond.new
+          @zone_conds["#{zone_name} Dewpoint Temperature"].name = "Dewpoint Temperature: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_conds["#{zone_name} Dewpoint Temperature"].timeseries_units = 'F'
+          @zone_conds["#{zone_name} Dewpoint Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Air Dewpoint Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+        end
       end
 
       # Zone mean radiant temperatures
-      zone_names.each do |zone_name|
-        @zone_conds["#{zone_name} Radiant Temperature"] = ZoneCond.new
-        @zone_conds["#{zone_name} Radiant Temperature"].name = "Radiant Temperature: #{sanitize_name(zone_name)}"
-        @zone_conds["#{zone_name} Radiant Temperature"].timeseries_units = 'F'
-        @zone_conds["#{zone_name} Radiant Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Radiant Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_conds["#{zone_name} Radiant Temperature"] = ZoneCond.new
+          @zone_conds["#{zone_name} Radiant Temperature"].name = "Radiant Temperature: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_conds["#{zone_name} Radiant Temperature"].timeseries_units = 'F'
+          @zone_conds["#{zone_name} Radiant Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Mean Radiant Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+        end
       end
 
       # Zone operative temperatures
-      zone_names.each do |zone_name|
-        @zone_conds["#{zone_name} Operative Temperature"] = ZoneCond.new
-        @zone_conds["#{zone_name} Operative Temperature"].name = "Operative Temperature: #{sanitize_name(zone_name)}"
-        @zone_conds["#{zone_name} Operative Temperature"].timeseries_units = 'F'
-        @zone_conds["#{zone_name} Operative Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Operative Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+      bldg_id_zone_name_map.each do |bldg_id, zone_names|
+        zone_names.each do |zone_name|
+          @zone_conds["#{zone_name} Operative Temperature"] = ZoneCond.new
+          @zone_conds["#{zone_name} Operative Temperature"].name = "Operative Temperature: #{sanitize_name(bldg_id, zone_name)}"
+          @zone_conds["#{zone_name} Operative Temperature"].timeseries_units = 'F'
+          @zone_conds["#{zone_name} Operative Temperature"].timeseries_output = get_report_variable_data_timeseries([zone_name], ['Zone Operative Temperature'], 9.0 / 5.0, 32.0, args[:timeseries_frequency])
+        end
       end
     end
 
@@ -1453,19 +1463,6 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
   def check_for_errors(runner)
     tol = 0.1 # 0.1%
 
-    # ElectricityProduced:Facility contains:
-    # - Generator Produced DC Electricity Energy
-    # - Inverter Conversion Loss Decrement Energy
-    # - Electric Storage Production Decrement Energy
-    # - Electric Storage Discharge Energy
-    # - Converter Electricity Loss Decrement Energy (should always be zero since efficiency=1.0)
-    # ElectricStorage:ElectricityProduced contains:
-    # - Electric Storage Production Decrement Energy
-    # - Electric Storage Discharge Energy
-    # So, we need to subtract ElectricStorage:ElectricityProduced from ElectricityProduced:Facility
-    meter_elec_produced = -1 * get_report_meter_data_annual(['ElectricityProduced:Facility'])
-    meter_elec_produced += get_report_meter_data_annual(['ElectricStorage:ElectricityProduced'])
-
     # Check if simulation successful
     all_total = @fuels.values.map { |x| x.annual_output.to_f }.sum(0.0)
     total_fraction_cool_load_served = @hpxml_bldgs.map { |hpxml_bldg| hpxml_bldg.total_fraction_cool_load_served }.sum(0.0)
@@ -1479,7 +1476,9 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
     end
 
     # Check sum of electricity produced end use outputs match total output from meter
-    sum_elec_prod_annual = @end_uses.select { |k, eu| k[0] == FT::Elec && eu.is_negative }.map { |_k, eu| eu.annual_output.to_f }.sum(0.0) # Negative value
+    meter_elec_produced = get_report_meter_data_annual(['ElectricityProduced:Facility'])
+    meter_elec_produced -= get_report_meter_data_annual(['ElectricStorage:ElectricityProduced']) # ElectricityProduced:Facility contains ElectricStorage:ElectricityProduced, so we have to subtract it
+    sum_elec_prod_annual = @end_uses.select { |k, eu| k[0] == FT::Elec && eu.is_negative }.map { |_k, eu| eu.annual_output.to_f }.sum(0.0).abs # Positive value
     avg_value = (sum_elec_prod_annual + meter_elec_produced) / 2.0
     if (sum_elec_prod_annual - meter_elec_produced).abs / avg_value > tol
       runner.registerError("#{FT::Elec} produced category end uses (#{sum_elec_prod_annual.round(3)}) do not sum to total (#{meter_elec_produced.round(3)}).")
@@ -1892,7 +1891,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
           data = data.map { |a| a[1..-1] }
         end
 
-        # Add header per DataFileTemplate.pdf; see https://github.com/NREL/wex/wiki/DView
+        # Add header per DataFileTemplate.pdf; see https://github.com/NatLabRockies/wex/wiki/DView
         year = @hpxml_header.sim_calendar_year
         start_day = Calendar.get_day_num_from_month_day(year, @hpxml_header.sim_begin_month, @hpxml_header.sim_begin_day)
         start_hr = (start_day - 1) * 24
@@ -2036,7 +2035,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       load_kw = crit_load[t]
 
       # even if load_kw is negative, we return if batt_soc_kwh isn't charged at all
-      return i / Float(ts_per_hr) if batt_soc_kwh <= 0
+      return i / Float(ts_per_hr) if batt_soc_kwh <= Constants::Small
 
       if load_kw < 0 # load is met with PV
         if batt_soc_kwh < batt_kwh # charge battery if there's room in the battery
@@ -3210,11 +3209,6 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       if object.to_ElectricLoadCenterStorageLiIonNMCBattery.is_initialized
         if object.additionalProperties.getFeatureAsString('ObjectType').to_s == Constants::ObjectTypeBattery
           return { RT::Battery => ['Electric Storage Charge Fraction'] }
-        end
-
-      elsif object.to_OtherEquipment.is_initialized
-        if object_type == Constants::ObjectTypeBatteryLossesAdjustment
-          return { RT::Battery => ['Other Equipment Electricity Energy'] }
         end
 
       end

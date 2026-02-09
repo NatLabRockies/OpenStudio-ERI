@@ -1,3 +1,20 @@
+## OpenStudio-HPXML v1.12.0
+
+__New Features__
+- HVAC updates:
+  - Dual-fuel heat pumps with switchover temperatures > 25F are now autosized based on 25F to allow some additional heating capacity buffer.
+  - Improves handling of duct leakage specified using cfm25/cfm50.
+- Output updates:
+  - **Breaking change**: Replaces "UnitX" prefixes with Building IDs in whole SFA/MF building timeseries outputs.
+
+__Bugfixes__
+- Fixes a misleading warning about adjusting inverted setpoints when heating setpoint is greater than cooling setpoint during non-overlapping heating/cooling seasons.
+- Fixes possible incorrect unmet hours outputs for unavailable periods with no space heating only (or no space cooling only).
+- Fixes PanHeaterControlType="heat pump mode" incorrectly disallowed for mini-split heat pumps.
+- Fixes the design cooling temperature calculations for some vented attic roof types (shingles, plastic/rubber/synthetic sheeting, concrete, cool roof, expanded polystyrene sheathing)
+- Fixes unit multiplier ignored for EV charging using `Vehicles`.
+- Fixes handling of battery losses in the battery resilience output.
+
 ## OpenStudio-HPXML v1.11.0
 
 __New Features__
