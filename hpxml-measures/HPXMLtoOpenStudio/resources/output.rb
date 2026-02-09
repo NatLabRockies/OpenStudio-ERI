@@ -5,6 +5,7 @@ module Outputs
   MeterCustomElectricityTotal = 'Electricity:Total'
   MeterCustomElectricityNet = 'Electricity:Net'
   MeterCustomElectricityPV = 'Electricity:PV'
+  MeterCustomElectricityCritical = 'Electricity:Critical'
 
   # Add EMS programs for output reporting. In the case where a whole SFA/MF building is
   # being simulated, these programs are added to the whole building (merged) model, not
@@ -103,7 +104,8 @@ module Outputs
       }
     end
 
-    hvac_availability_sensor = model.getEnergyManagementSystemSensors.find { |s| s.additionalProperties.getFeatureAsString('ObjectType').to_s == Constants::ObjectTypeHVACAvailabilitySensor }
+    htg_avail_sensor = model.getEnergyManagementSystemSensors.find { |s| s.additionalProperties.getFeatureAsString('ObjectType').to_s == Constants::ObjectTypeHeatingAvailabilitySensor }
+    clg_avail_sensor = model.getEnergyManagementSystemSensors.find { |s| s.additionalProperties.getFeatureAsString('ObjectType').to_s == Constants::ObjectTypeCoolingAvailabilitySensor }
 
     # EMS program
     clg_hrs = 'clg_unmet_hours'
@@ -125,7 +127,7 @@ module Outputs
         else
           line = "If ((DayOfYear >= #{season_day_nums[unit][:htg_start]}) || (DayOfYear <= #{season_day_nums[unit][:htg_end]}))"
         end
-        line += " && (#{hvac_availability_sensor.name} == 1)" if not hvac_availability_sensor.nil?
+        line += " && (#{htg_avail_sensor.name} == 1)" if not htg_avail_sensor.nil?
         program.addLine(line)
         if zone_air_temp_sensors.keys.include? unit # on off deadband
           program.addLine("  If #{zone_air_temp_sensors[unit].name} < (#{htg_spt_sensors[unit].name} - #{UnitConversions.convert(onoff_deadbands, 'deltaF', 'deltaC')})")
@@ -147,7 +149,7 @@ module Outputs
       else
         line = "If ((DayOfYear >= #{season_day_nums[unit][:clg_start]}) || (DayOfYear <= #{season_day_nums[unit][:clg_end]}))"
       end
-      line += " && (#{hvac_availability_sensor.name} == 1)" if not hvac_availability_sensor.nil?
+      line += " && (#{clg_avail_sensor.name} == 1)" if not clg_avail_sensor.nil?
       program.addLine(line)
       if zone_air_temp_sensors.keys.include? unit # on off deadband
         program.addLine("  If #{zone_air_temp_sensors[unit].name} > (#{clg_spt_sensors[unit].name} + #{UnitConversions.convert(onoff_deadbands, 'deltaF', 'deltaC')})")
@@ -1450,10 +1452,12 @@ module Outputs
     # - Total Electricity (Electricity:Facility plus EV charging, batteries, generators)
     # - Net Electricity (above plus PV)
     # - PV Electricity
+    # - Critical Electricity (Electricity:Facility plus PV, generators)
 
     total_key_vars = []
     net_key_vars = []
     pv_key_vars = []
+    gen_key_vars = []
     model.getElectricLoadCenterDistributions.each do |elcd|
       # Batteries & EV charging output variables
       if elcd.electricalStorage.is_initialized
@@ -1485,12 +1489,14 @@ module Outputs
 
         net_key_vars << ['', 'Cogeneration:ElectricityProduced']
         total_key_vars << net_key_vars[-1]
+        gen_key_vars << net_key_vars[-1]
       end
     end
 
-    # Create Total/Net meters
+    # Create Total/Net/Critical meters
     { MeterCustomElectricityTotal => total_key_vars,
-      MeterCustomElectricityNet => net_key_vars }.each do |meter_name, key_vars|
+      MeterCustomElectricityNet => net_key_vars,
+      MeterCustomElectricityCritical => pv_key_vars + gen_key_vars }.each do |meter_name, key_vars|
       if key_vars.empty?
         # Avoid OpenStudio warnings if nothing to decrement
         key_vars << ['', 'Electricity:Facility']
