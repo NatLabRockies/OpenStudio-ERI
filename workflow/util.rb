@@ -86,3 +86,12 @@ def calc_renewable_energy_limit(eri_outputs, iecc_version)
     fail 'Unhandled IECC version.'
   end
 end
+
+def simulation_succeeded?(design_dir)
+  # EnergyPlus writes eplusout.end whether or not the simulation succeeds, so check
+  # what it says rather than whether it exists.
+  end_path = File.join(design_dir, 'eplusout.end')
+  return false unless File.exist? end_path
+
+  return File.read(end_path).include? 'EnergyPlus Completed Successfully'
+end

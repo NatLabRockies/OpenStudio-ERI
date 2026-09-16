@@ -123,6 +123,15 @@ def run_simulations(designs, options, duplicates)
     end
 
   end
+
+  # Stop on a failed design here. The HPXMLtoOpenStudio measure writes the annual results
+  # file before the simulation runs, so later checks for that file can't tell, and the
+  # failure otherwise surfaces as an unrelated error.
+  if unique_designs.any? { |design| !simulation_succeeded?(design.design_dir) }
+    puts 'Errors encountered. Aborting...'
+    $stdout.flush # exit! skips at_exit, so buffered output is lost when stdout is piped
+    exit!
+  end
 end
 
 def duplicate_output_files(duplicates, designs, options)
