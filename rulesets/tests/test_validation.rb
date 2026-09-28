@@ -75,6 +75,8 @@ class ERI301ValidationTest < Minitest::Test
                             'hvac-cooling-seer-with-eer2' => ['Expected SEER to be paired with EER, or SEER2 with EER2.'],
                             'hvac-cooling-seer2-with-eer' => ['Expected SEER to be paired with EER, or SEER2 with EER2.'],
                             'hvac-heat-pump-seer-with-eer2' => ['Expected SEER to be paired with EER, or SEER2 with EER2.'],
+                            'hvac-heat-pump-seer-with-hspf2' => ['Expected SEER to be paired with HSPF, or SEER2 with HSPF2.'],
+                            'hvac-heat-pump-seer2-with-hspf' => ['Expected SEER to be paired with HSPF, or SEER2 with HSPF2.'],
                             'energy-star-SF_Florida_3.1' => ['Expected ../../../../Building/Site/Address/StateCode="FL"'],
                             'energy-star-SF_OregonWashington_3.2' => ['Expected ../../../../Building/Site/Address/StateCode=("OR" or "WA")'],
                             'energy-star-SF_Pacific_3.0' => ['Expected ../../../../Building/Site/Address/StateCode=("HI" or "GU" or "MP")'],
@@ -120,6 +122,18 @@ class ERI301ValidationTest < Minitest::Test
         hpxml, hpxml_bldg = _create_hpxml('base-hvac-mini-split-heat-pump-ductless.xml')
         hpxml_bldg.heat_pumps[0].cooling_efficiency_seer = hpxml_bldg.heat_pumps[0].cooling_efficiency_seer2
         hpxml_bldg.heat_pumps[0].cooling_efficiency_seer2 = nil
+        hpxml_bldg.heat_pumps[0].heating_efficiency_hspf = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2
+        hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 = nil
+      elsif ['hvac-heat-pump-seer-with-hspf2'].include? error_case
+        hpxml, hpxml_bldg = _create_hpxml('base-hvac-mini-split-heat-pump-ductless.xml')
+        hpxml_bldg.heat_pumps[0].cooling_efficiency_seer = hpxml_bldg.heat_pumps[0].cooling_efficiency_seer2
+        hpxml_bldg.heat_pumps[0].cooling_efficiency_seer2 = nil
+        hpxml_bldg.heat_pumps[0].cooling_efficiency_eer = hpxml_bldg.heat_pumps[0].cooling_efficiency_eer2
+        hpxml_bldg.heat_pumps[0].cooling_efficiency_eer2 = nil
+      elsif ['hvac-heat-pump-seer2-with-hspf'].include? error_case
+        hpxml, hpxml_bldg = _create_hpxml('base-hvac-air-to-air-heat-pump-1-speed.xml')
+        hpxml_bldg.heat_pumps[0].heating_efficiency_hspf = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2
+        hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 = nil
       elsif error_case.include? 'energy-star'
         version = error_case.gsub('energy-star-', '')
         if ES::SFVersions.include? version
