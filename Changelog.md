@@ -14,6 +14,7 @@ __Bugfixes__
 - Fixes heat gain from occupants; heat gains from appliances, lighting, etc. are unaffected.
 - Fixes specific heat for drywall (0.2 -> 0.26 Btu/lb-F).
 - Fixes order-dependent effective below-grade depth when collapsing similar foundation walls.
+- **Breaking change**: HVAC efficiencies must be paired by generation, i.e., SEER2 with EER2/HSPF2 or SEER with EER/HSPF; a mixed pair previously passed validation and could cause an EnergyPlus error.
 
 ## OpenStudio-ERI v1.12.0
 
