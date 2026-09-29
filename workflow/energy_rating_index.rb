@@ -205,7 +205,7 @@ def retrieve_design_outputs(designs)
     design_outputs[calc_type] = {}
 
     hpxml = HPXML.new(hpxml_path: design.hpxml_output_path)
-    Defaults.apply_shared_systems(hpxml.buildings[0])
+    Defaults.convert_shared_systems_to_in_unit_systems(hpxml.buildings[0])
     design_outputs[calc_type]['HPXML'] = hpxml
     design_outputs[calc_type]['OUTPUT_DIR'] = File.dirname(design.annual_output_path)
 
