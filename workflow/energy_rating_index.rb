@@ -136,8 +136,12 @@ def duplicate_output_files(duplicates, designs, options)
     FileUtils.cp_r(source_design.design_dir, dest_design.design_dir)
 
     # Duplicate annual results files
-    FileUtils.cp(source_design.hpxml_output_path, dest_design.hpxml_output_path)
-    FileUtils.cp(source_design.annual_output_path, dest_design.annual_output_path)
+    if File.exist?(source_design.hpxml_output_path)
+      FileUtils.cp(source_design.hpxml_output_path, dest_design.hpxml_output_path)
+    end
+    if File.exist?(source_design.annual_output_path)
+      FileUtils.cp(source_design.annual_output_path, dest_design.annual_output_path)
+    end
 
     # Duplicate timeseries results files
     source_design_timeseries_output_path = source_design.annual_output_path.gsub(".#{options[:output_format]}", "_#{options[:timeseries_output_freq].capitalize}.#{options[:output_format]}")
@@ -197,6 +201,7 @@ def retrieve_design_outputs(designs)
   designs.each do |design|
     if not File.exist? design.annual_output_path
       puts 'Errors encountered. Aborting...'
+      $stdout.flush
       exit!
     end
 
