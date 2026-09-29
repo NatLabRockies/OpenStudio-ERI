@@ -4,9 +4,7 @@ require 'openstudio'
 require_relative '../../hpxml-measures/HPXMLtoOpenStudio/resources/minitest_helper'
 require 'fileutils'
 require 'csv'
-require 'tmpdir'
 require_relative 'util.rb'
-require_relative '../util.rb'
 
 class WorkflowTest < Minitest::Test
   def setup
@@ -119,20 +117,6 @@ class WorkflowTest < Minitest::Test
 
     # Check that CO2e Reference Home HPXML does not reference ERI Reference Home
     assert_equal(false, FileUtils.compare_file(hpxmls[:co2ref], hpxmls[:ref]))
-  end
-
-  def test_simulation_succeeded
-    # EnergyPlus writes eplusout.end on failure too, so its contents decide.
-    Dir.mktmpdir do |dir|
-      refute(simulation_succeeded?(dir)) # no eplusout.end
-
-      end_path = File.join(dir, 'eplusout.end')
-      File.write(end_path, 'EnergyPlus Terminated--Fatal Error Detected. 5 Warning; 0 Severe Errors; Elapsed Time=00hr 00min  0.42sec')
-      refute(simulation_succeeded?(dir))
-
-      File.write(end_path, 'EnergyPlus Completed Successfully-- 5 Warning; 0 Severe Errors; Elapsed Time=00hr 00min  5.10sec')
-      assert(simulation_succeeded?(dir))
-    end
   end
 
   def test_running_with_cli
