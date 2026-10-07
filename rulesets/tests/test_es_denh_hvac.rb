@@ -630,11 +630,11 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
       hvac_iq_values = get_default_hvac_iq_values(program_version)
       _check_heating_system(hpxml_bldg)
       _check_cooling_system(hpxml_bldg)
-      if [*ES::MFVersions].include? program_version
+      if [*ES::MFVersions, DENH::MFVer2].include? program_version
         hvac_eff_values = get_hvac_eff_values(program_version, 'gshp', 5)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpGroundToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, pump_w_per_ton: 80, **hvac_eff_values, **hvac_iq_values }])
       elsif [ES::SFFloridaVer3_1, ES::SFOregonWashingtonVer3_2, ES::SFPacificVer3_0, ES::SFNationalVer3_0, ES::SFNationalVer3_1, ES::SFNationalVer3_2, ES::SFNationalVer3_3,
-             DENH::Ver1, DENH::SFVer2, DENH::MFVer2].include? program_version
+             DENH::Ver1, DENH::SFVer2].include? program_version
         hvac_eff_values = get_hvac_eff_values(program_version, 'ashp', 5)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **hvac_eff_values, **hvac_iq_values }])
       else
@@ -673,12 +673,12 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
       hvac_iq_values = get_default_hvac_iq_values(program_version)
       _check_heating_system(hpxml_bldg)
       _check_cooling_system(hpxml_bldg)
-      if [ES::SFNationalVer3_0, *ES::MFVersions, DENH::Ver1].include? program_version
+      if [ES::SFNationalVer3_0, *ES::MFVersions, DENH::Ver1, DENH::MFVer2].include? program_version
         hvac_eff_values = get_hvac_eff_values(program_version, 'gshp', 7)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpGroundToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, pump_w_per_ton: 80, **hvac_eff_values, **hvac_iq_values }])
       elsif [ES::SFFloridaVer3_1, ES::SFOregonWashingtonVer3_2, ES::SFPacificVer3_0, ES::SFNationalVer3_1, ES::SFNationalVer3_2, ES::SFNationalVer3_3,
              ES::MFOregonWashingtonVer1_2, ES::MFNationalVer1_0, ES::MFNationalVer1_1, ES::MFNationalVer1_2, ES::MFNationalVer1_3,
-             DENH::SFVer2, DENH::MFVer2].include? program_version
+             DENH::SFVer2].include? program_version
         hvac_eff_values = get_hvac_eff_values(program_version, 'ashp', 7)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **hvac_eff_values, **hvac_iq_values }])
       else
@@ -1213,7 +1213,7 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
       _check_cooling_system(hpxml_bldg, [{ systype: HPXML::HVACTypeCentralAirConditioner, fuel: HPXML::FuelTypeElectricity, frac_load: 0.1333, **ac_eff_values, **hvac_iq_values },
                                          { systype: HPXML::HVACTypeCentralAirConditioner, fuel: HPXML::FuelTypeElectricity, frac_load: 0.1333, **ac_eff_values, **hvac_iq_values },
                                          { systype: HPXML::HVACTypeCentralAirConditioner, fuel: HPXML::FuelTypeElectricity, frac_load: 0.1333, **ac_eff_values, **hvac_iq_values }])
-      if [*ES::MFVersions].include? program_version
+      if [*ES::MFVersions, DENH::MFVer2].include? program_version
         gshp_eff_values = get_hvac_eff_values(program_version, 'gshp', 5)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values },
                                       { systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values },
@@ -1222,7 +1222,7 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
                                       { systype: HPXML::HVACTypeHeatPumpGroundToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.2, pump_w_per_ton: 80, is_shared_system: false, **gshp_eff_values, **hvac_iq_values },
                                       { systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.2, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values }])
       elsif [ES::SFFloridaVer3_1, ES::SFOregonWashingtonVer3_2, ES::SFPacificVer3_0, ES::SFNationalVer3_0, ES::SFNationalVer3_1, ES::SFNationalVer3_2, ES::SFNationalVer3_3,
-             DENH::Ver1, DENH::SFVer2, DENH::MFVer2].include? program_version
+             DENH::Ver1, DENH::SFVer2].include? program_version
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values },
                                       { systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values },
                                       { systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 0.1, frac_load_cool: 0.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values },
@@ -1771,11 +1771,11 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
       hvac_iq_values = get_default_hvac_iq_values(program_version)
       _check_heating_system(hpxml_bldg)
       _check_cooling_system(hpxml_bldg)
-      if [*ES::MFVersions].include? program_version
+      if [*ES::MFVersions, DENH::MFVer2].include? program_version
         gshp_eff_values = get_hvac_eff_values(program_version, 'gshp', 5)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpGroundToAir, fuel: HPXML::FuelTypeElectricity, num_units_served: 6, frac_load_heat: 1.0, frac_load_cool: 1.0, shared_loop_watts: 635.3, pump_w_per_ton: 80, is_shared_system: true, **gshp_eff_values, **hvac_iq_values }])
       elsif [ES::SFFloridaVer3_1, ES::SFOregonWashingtonVer3_2, ES::SFPacificVer3_0, ES::SFNationalVer3_0, ES::SFNationalVer3_1, ES::SFNationalVer3_2, ES::SFNationalVer3_3,
-             DENH::Ver1, DENH::SFVer2, DENH::MFVer2].include? program_version
+             DENH::Ver1, DENH::SFVer2].include? program_version
         ashp_eff_values = get_hvac_eff_values(program_version, 'ashp', 5)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values }])
       else
@@ -1811,11 +1811,11 @@ class EnergyStarDOEEfficientNewHomeHVACtest < Minitest::Test
       hvac_iq_values = get_default_hvac_iq_values(program_version)
       _check_heating_system(hpxml_bldg)
       _check_cooling_system(hpxml_bldg)
-      if [ES::SFNationalVer3_0, *ES::MFVersions, DENH::Ver1].include? program_version
+      if [ES::SFNationalVer3_0, *ES::MFVersions, DENH::Ver1, DENH::MFVer2].include? program_version
         gshp_eff_values = get_hvac_eff_values(program_version, 'gshp', 7)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpGroundToAir, fuel: HPXML::FuelTypeElectricity, num_units_served: 6, frac_load_heat: 1.0, frac_load_cool: 1.0, shared_loop_watts: 635.3, pump_w_per_ton: 80, is_shared_system: true, **gshp_eff_values, **hvac_iq_values }])
       elsif [ES::SFFloridaVer3_1, ES::SFOregonWashingtonVer3_2, ES::SFPacificVer3_0, ES::SFNationalVer3_1, ES::SFNationalVer3_2, ES::SFNationalVer3_3,
-             DENH::SFVer2, DENH::MFVer2].include? program_version
+             DENH::SFVer2].include? program_version
         ashp_eff_values = get_hvac_eff_values(program_version, 'ashp', 7)
         _check_heat_pump(hpxml_bldg, [{ systype: HPXML::HVACTypeHeatPumpAirToAir, fuel: HPXML::FuelTypeElectricity, frac_load_heat: 1.0, frac_load_cool: 1.0, backup_fuel: HPXML::FuelTypeElectricity, backup_eff: 1.0, **ashp_eff_values, **hvac_iq_values }])
       else
