@@ -144,16 +144,16 @@ ES results.csv
 
 A ``ES_<Version>/results/results.csv`` file will be produced when requesting an ENERGY STAR calculation (``EnergyStarCalculation``); see :ref:`hpxml_calculations`.
 
-  ====================================  =====
-  Output                                Notes
-  ====================================  =====
-  Reference Home ERI                    ERI of the ES Reference Home
-  SAF (Size Adjustment Factor)          Can only be less than 1 for some programs/versions
-  SAF Adjusted ERI Target               Reference Home ERI multiplied by SAF
-  Rated Home ERI                        ERI of the Rated Home including OPP as allowed by the program/version
-  Rated Home ERI w/o OPP                ERI of the Rated Home excluding any on-site power production (OPP)
-  ENERGY STAR Certification             PASS or FAIL
-  ====================================  =====
+  =====================================  =====
+  Output                                 Notes
+  =====================================  =====
+  Reference Home ERI                     ERI of the ES Reference Home
+  SAF (Size Adjustment Factor)           Can only be less than 1 for some programs/versions
+  SAF Adjusted ERI Target                Reference Home ERI multiplied by SAF
+  Rated Home ERI w/ OPP                  ERI of the Rated Home including on-site power production (OPP), or N/A if home has no OPP
+  Rated Home ERI w/o OPP                 ERI of the Rated Home excluding on-site power production (OPP)
+  ENERGY STAR Certification              PASS or FAIL
+  =====================================  =====
 
 .. _denh_results_csv:
 
@@ -168,8 +168,8 @@ A ``DENH_<Version>/results/results.csv`` file will be produced when requesting a
   Reference Home ERI                     ERI of the DENH Reference Home
   SAF (Size Adjustment Factor)           Can only be less than 1 for some programs/versions
   SAF Adjusted ERI Target                Reference Home ERI multiplied by SAF
-  Rated Home ERI                         ERI of the Rated Home including OPP as allowed by the program/version
-  Rated Home ERI w/o OPP                 ERI of the Rated Home excluding any on-site power production (OPP)
+  Rated Home ERI w/ OPP                  ERI of the Rated Home including on-site power production (OPP), or N/A if home has no OPP
+  Rated Home ERI w/o OPP                 ERI of the Rated Home excluding on-site power production (OPP)
   DOE Efficient New Homes Certification  PASS or FAIL
   =====================================  =====
 
