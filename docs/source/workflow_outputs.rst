@@ -570,10 +570,14 @@ Capacities for individual HVAC systems can be found in the, e.g., ERIReferenceHo
   ====================================================  ====================
   Type                                                  Notes
   ====================================================  ====================
-  HVAC Capacity: Cooling (Btu/h)                        Total HVAC cooling capacity
-  HVAC Capacity: Heating (Btu/h)                        Total HVAC heating capacity
-  HVAC Capacity: Heat Pump Backup (Btu/h)               Total HVAC heat pump backup capacity
+  HVAC Capacity: Cooling (Btu/h)                        Total rated output cooling capacity [#]_
+  HVAC Capacity: Heating (Btu/h)                        Total rated output heating capacity [#]_
+  HVAC Capacity: Heat Pump Backup (Btu/h)               Total rated output heat pump backup capacity [#]_
   ====================================================  ====================
+
+  .. [#] I.e., sum of all ``CoolingSystem/CoolingCapacity`` and ``HeatPump/CoolingCapacity``, whether user-specified or autosized.
+  .. [#] I.e., sum of all ``HeatingSystem/HeatingCapacity`` and ``HeatPump/HeatingCapacity``, whether user-specified or autosized.
+  .. [#] I.e., sum of all ``HeatPump/BackupHeatingCapacity``, whether user-specified or autosized.
 
 HVAC Design Temperatures
 ~~~~~~~~~~~~~~~~~~~~~~~~

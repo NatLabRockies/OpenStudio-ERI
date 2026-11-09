@@ -346,7 +346,6 @@
             <SystemIdentifier id='WaterHeatingSystem4'/>
             <FuelType>electricity</FuelType>
             <WaterHeaterType>instantaneous water heater</WaterHeaterType>
-            <Location>conditioned space</Location>
             <IsSharedSystem>false</IsSharedSystem>
             <FractionDHWLoadServed>0.2</FractionDHWLoadServed>
             <EnergyFactor>0.99</EnergyFactor>
@@ -355,7 +354,6 @@
             <SystemIdentifier id='WaterHeatingSystem5'/>
             <FuelType>natural gas</FuelType>
             <WaterHeaterType>instantaneous water heater</WaterHeaterType>
-            <Location>conditioned space</Location>
             <IsSharedSystem>false</IsSharedSystem>
             <FractionDHWLoadServed>0.1</FractionDHWLoadServed>
             <EnergyFactor>0.82</EnergyFactor>

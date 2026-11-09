@@ -6,6 +6,7 @@ __Features__
 - Updates garage ventilation rate to be SLA=1/150 (same as a vented crawlspace).
 - To accommodate electric furnaces/boilers, allows heating efficiency with units of "Percent" as an alternative to "AFUE"; the two units are modeled identically.
 - Adds min/max value warnings for clothes washer and dishwasher label inputs (e.g., `LabelElectricRate` and `LabelGasRate`).
+- Allows batteries to be located in multifamily spaces; these locations are modeled as outside, so battery heat gains are not assigned to the dwelling unit.
 
 __Bugfixes__
 - **Breaking change**: Prevent possible error if heat pump water heater in confined space with very small containment volume; minimum allowed volume now 32 ft3.
@@ -18,6 +19,7 @@ __Bugfixes__
 - Fixes order-dependent effective below-grade depth when collapsing similar foundation walls.
 - **Breaking change**: HVAC efficiencies must be paired by generation, i.e., SEER2 with EER2/HSPF2 or SEER with EER/HSPF; a mixed pair previously passed validation and could cause an EnergyPlus error.
 - Fixes a failed simulation being reported as an unrelated error (e.g., `TypeError` or `JSON::ParserError`); the workflow now stops with "Errors encountered. Aborting...".
+- Removes `Location` input for "instantaneous water heater" and "space-heating boiler with tankless coil" water heater types.
 
 ## OpenStudio-ERI v1.12.0
 
