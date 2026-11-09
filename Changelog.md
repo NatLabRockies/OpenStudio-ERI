@@ -19,7 +19,6 @@ __Bugfixes__
 - Fixes order-dependent effective below-grade depth when collapsing similar foundation walls.
 - **Breaking change**: HVAC efficiencies must be paired by generation, i.e., SEER2 with EER2/HSPF2 or SEER with EER/HSPF; a mixed pair previously passed validation and could cause an EnergyPlus error.
 - Fixes a failed simulation being reported as an unrelated error (e.g., `TypeError` or `JSON::ParserError`); the workflow now stops with "Errors encountered. Aborting...".
-- Removes `Location` input for "instantaneous water heater" and "space-heating boiler with tankless coil" water heater types.
 
 ## OpenStudio-ERI v1.12.0
 

@@ -2184,6 +2184,7 @@ Each instantaneous tankless water heater is entered as a ``/HPXML/Building/Build
   ``SystemIdentifier``                         id                                                 Yes                     Unique identifier
   ``FuelType``                                 string                 See [#]_                    Yes                     Fuel type
   ``WaterHeaterType``                          string                 instantaneous water heater  Yes                     Type of water heater
+  ``Location``                                 string                 See [#]_                    Yes                     Water heater location
   ``IsSharedSystem``                           boolean                                            Yes                     Whether it serves multiple dwelling units or shared laundry room
   ``FractionDHWLoadServed``                    double   frac          >= 0, <= 1 [#]_             Yes                     Fraction of hot water load served [#]_
   ``UniformEnergyFactor`` or ``EnergyFactor``  double   frac          < 1                         Yes                     EnergyGuide label rated efficiency
@@ -2192,6 +2193,8 @@ Each instantaneous tankless water heater is entered as a ``/HPXML/Building/Build
   ===========================================  =======  ============  ==========================  ============  ========  ==========================================================
 
   .. [#] FuelType choices are "natural gas", "fuel oil", "propane", "electricity", "wood", or "wood pellets".
+  .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2284,12 +2287,15 @@ Each combination boiler w/ tankless coil is entered as a ``/HPXML/Building/Build
   ====================================  =======  ============  =======================================  ============  ========  ==================================================
   ``SystemIdentifier``                  id                                                              Yes                     Unique identifier
   ``WaterHeaterType``                   string                 space-heating boiler with tankless coil  Yes                     Type of water heater
+  ``Location``                          string                 See [#]_                                 Yes                     Water heater location
   ``IsSharedSystem``                    boolean                                                         Yes                     Whether it serves multiple dwelling units or shared laundry room
   ``FractionDHWLoadServed``             double   frac          >= 0, <= 1 [#]_                          Yes                     Fraction of hot water load served [#]_
   ``RelatedHVACSystem``                 idref                  See [#]_                                 Yes                     ID of boiler
   ``extension/NumberofBedroomsServed``  integer                > NumberofBedrooms                       See [#]_                Number of bedrooms served directly or indirectly
   ====================================  =======  ============  =======================================  ============  ========  ==================================================
 
+  .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
