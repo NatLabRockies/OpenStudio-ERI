@@ -521,7 +521,7 @@ For a multifamily building where the dwelling unit has another dwelling unit abo
   ======================================  =========  ============  ============  =========  ========  ==================================
 
   .. [#] InteriorAdjacentTo choices are "attic - vented", "attic - unvented", "conditioned space", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If Azimuth not provided, and it's a *pitched* roof, modeled as four surfaces of equal area facing every direction.
          Azimuth is irrelevant for *flat* roofs.
   .. [#] Pitch is entered as vertical rise in inches for every 12 inches of horizontal run.
@@ -553,9 +553,9 @@ Each rim joist surface (i.e., the perimeter of floor joists typically found betw
   ======================================  =======  ============  ============  ========  ===========  ==============================
 
   .. [#] ExteriorAdjacentTo choices are "outside", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] InteriorAdjacentTo choices are "conditioned space", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If Azimuth not provided, and it's an *exterior* rim joist, modeled as four surfaces of equal area facing every direction.
          Azimuth is irrelevant for *interior* rim joists.
   .. [#] SolarAbsorptance only required for exterior rim joists (i.e., ExteriorAdjacentTo=outside).
@@ -587,9 +587,9 @@ Each wall surface is entered as a ``/HPXML/Building/BuildingDetails/Enclosure/Wa
   ======================================  =======  ============  ============  ========  ===========  ====================================
 
   .. [#] ExteriorAdjacentTo choices are "outside", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] InteriorAdjacentTo choices are "conditioned space", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] WallType child element choices are ``WoodStud``, ``DoubleWoodStud``, ``ConcreteMasonryUnit``, ``StructuralInsulatedPanel``, ``InsulatedConcreteForms``, ``SteelFrame``, ``SolidConcrete``, ``StructuralBrick``, ``StrawBale``, ``Stone``, ``LogWall``, or ``Adobe``.
   .. [#] If Azimuth not provided, and it's an *exterior* wall, modeled as four surfaces of equal area facing every direction.
          Azimuth is irrelevant for *interior* walls (e.g., between conditioned space and garage).
@@ -626,10 +626,10 @@ Any wall surface in contact with the ground is considered a foundation wall.
   ==============================================================  ========  ============  ===============  =========  ==============  ====================================
 
   .. [#] ExteriorAdjacentTo choices are "ground", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] Interior foundation walls (e.g., between basement and crawlspace) should **not** use "ground" even if the foundation wall has some contact with the ground due to the difference in below-grade depths of the two adjacent spaces.
   .. [#] InteriorAdjacentTo choices are "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] Type choices are "solid concrete", "concrete block", "concrete block foam core", "concrete block vermiculite core", "concrete block perlite core", "concrete block solid core", "double brick", or "wood".
   .. [#] If Azimuth not provided, and it's an *exterior* foundation wall, modeled as four surfaces of equal area facing every direction.
          Azimuth is irrelevant for *interior* foundation walls (e.g., between basement and garage).
@@ -677,9 +677,9 @@ Each floor/ceiling surface that is not in contact with the ground (Slab) nor adj
   ======================================  ========  ============  ===========  ========  =======  ============================
 
   .. [#] ExteriorAdjacentTo choices are "outside", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] InteriorAdjacentTo choices are "conditioned space", "attic - vented", "attic - unvented", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] FloorOrCeiling choices are "floor" or "ceiling".
   .. [#] FloorOrCeiling only required for floors adjacent to "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
   .. [#] FloorType child element choices are ``WoodFrame``, ``StructuralInsulatedPanel``, ``SteelFrame``, or ``SolidConcrete``.
@@ -716,7 +716,7 @@ Each space type that borders the ground (i.e., basement, crawlspace, garage, and
   =======================================================  ========  ============  ===========  =========  ========  ====================================================
 
   .. [#] InteriorAdjacentTo choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", or "garage".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If Thickness not provided, defaults to 0 when adjacent to crawlspace and 4 inches for all other cases.
   .. [#] For a crawlspace with a dirt floor, enter a thickness of zero.
   .. [#] ExposedPerimeter includes any slab length that falls along the perimeter of the building's footprint (i.e., is exposed to ground or outdoor air conditions).
@@ -1811,7 +1811,7 @@ Additional information is entered in each ``Ducts``.
          Deeply buried ducts have insulation that continues above the top of the ducts.
          See the `Building America Solution Center <https://basc.pnnl.gov/resource-guides/ducts-buried-attic-insulation>`_ for more information.
   .. [#] DuctLocation choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "crawlspace - unvented", "crawlspace - vented", "attic - unvented", "attic - vented", "garage", "outside", "exterior wall", "under slab", "roof deck", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all FractionDuctArea must each equal to 1, both for the supply side and return side.
   .. [#] If both are provided, DuctSurfaceArea will be used in the model.
   .. [#] If DuctSurfaceArea not provided, duct surface areas will be calculated based on `ANSI/RESNET/ICC 301-2022 <https://codes.iccsafe.org/content/RESNET3012022P1>`_:
@@ -2151,7 +2151,7 @@ Each conventional storage water heater is entered as a ``/HPXML/Building/Buildin
 
   .. [#] FuelType choices are "natural gas", "fuel oil", "propane", "electricity", "wood", or "wood pellets".
   .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2194,7 +2194,7 @@ Each instantaneous tankless water heater is entered as a ``/HPXML/Building/Build
 
   .. [#] FuelType choices are "natural gas", "fuel oil", "propane", "electricity", "wood", or "wood pellets".
   .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2229,7 +2229,7 @@ Each heat pump water heater (HPWH) is entered as a ``/HPXML/Building/BuildingDet
   ===================================================  =======  ============  ======================  ========  ========  ==========================================
 
   .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2265,7 +2265,7 @@ Each combination boiler w/ storage tank (sometimes referred to as an indirect wa
   =============================================  =======  ============  ======================================  ============  ========  ==================================================
 
   .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2295,7 +2295,7 @@ Each combination boiler w/ tankless coil is entered as a ``/HPXML/Building/Build
   ====================================  =======  ============  =======================================  ============  ========  ==================================================
 
   .. [#] Location choices are "conditioned space", "basement - unconditioned", "basement - conditioned", "attic - unvented", "attic - vented", "garage", "crawlspace - unvented", "crawlspace - vented", "other exterior", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] The sum of all ``FractionDHWLoadServed`` (across all WaterHeatingSystems) must equal to 1.
   .. [#] FractionDHWLoadServed represents only the fraction of the hot water load associated with the hot water **fixtures**.
          Additional hot water load from clothes washers/dishwashers will be automatically assigned to the appropriate water heater(s).
@@ -2608,7 +2608,8 @@ A single battery can be entered as a ``/HPXML/Building/BuildingDetails/Systems/B
   ``extension/NumberofBedroomsServed``                  integer             > NumberofBedrooms       See [#]_            Number of bedrooms served
   ====================================================  =======  =========  =======================  ========  ========  ============================================
 
-  .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "attic - vented", "attic - unvented", "garage", or "outside".
+  .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "crawlspace - vented", "crawlspace - unvented", "attic - vented", "attic - unvented", "garage", "other housing unit", "other heated space", "other multifamily buffer space", "other non-freezing space", or "outside".
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If Location not provided, defaults to "garage" if a garage is present, otherwise "outside".
   .. [#] BatteryType only choice is "Li-ion".
   .. [#] NumberofBedroomsServed only required if IsSharedSystem is true.
@@ -2675,7 +2676,7 @@ A single clothes washer can be entered as a ``/HPXML/Building/BuildingDetails/Ap
 
   .. [#] For example, a clothes washer in a shared laundry room of a MF building.
   .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If ModifiedEnergyFactor (MEF) provided instead of IntegratedModifiedEnergyFactor (IMEF), it will be converted using the `Interpretation on ANSI/RESNET 301-2014 Clothes Washer IMEF <https://www.resnet.us/wp-content/uploads/No.-301-2014-08-sECTION-4.2.2.5.2.8-Clothes-Washers-Eq-4.2-6.pdf>`_:
          IMEF = (MEF - 0.503) / 0.95.
          IMEF may be found using the manufacturer’s data sheet, the `California Energy Commission Appliance Database <https://cacertappliances.energy.ca.gov/Pages/ApplianceSearch.aspx>`_, the `EPA ENERGY STAR website <https://www.energystar.gov/productfinder/>`_, or another reputable source.
@@ -2716,7 +2717,7 @@ A single clothes dryer can be entered as a ``/HPXML/Building/BuildingDetails/App
 
   .. [#] For example, a clothes dryer in a shared laundry room of a MF building.
   .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] FuelType choices are "natural gas", "fuel oil", "propane", "electricity", "wood", or "wood pellets".
   .. [#] If EnergyFactor (EF) provided instead of CombinedEnergyFactor (CEF), it will be converted using the following equation based on the `Interpretation on ANSI/RESNET/ICC 301-2014 Clothes Dryer CEF <https://www.resnet.us/wp-content/uploads/No.-301-2014-10-Section-4.2.2.5.2.8-Clothes-Dryer-CEF-Rating.pdf>`_:
          CEF = EF / 1.15.
@@ -2758,7 +2759,7 @@ A single dishwasher can be entered as a ``/HPXML/Building/BuildingDetails/Applia
 
   .. [#] For example, a dishwasher in a shared mechanical room of a MF building.
   .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] If EnergyFactor (EF) provided instead of RatedAnnualkWh, it will be converted using the following equation based on `ANSI/RESNET/ICC 301-2014 <https://codes.iccsafe.org/content/RESNET3012014P1>`_:
          RatedAnnualkWh = 215.0 / EF.
 
@@ -2791,7 +2792,7 @@ A single refrigerator can be entered as a ``/HPXML/Building/BuildingDetails/Appl
   ====================  =======  ======  ===========  ========  ========  ==================
 
   .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
 
 .. note::
 
@@ -2841,7 +2842,7 @@ A single cooking range can be entered as a ``/HPXML/Building/BuildingDetails/App
   ====================  =======  ======  ===========  ========  =======  =================
 
   .. [#] Location choices are "conditioned space", "basement - conditioned", "basement - unconditioned", "garage", "other housing unit", "other heated space", "other multifamily buffer space", or "other non-freezing space".
-         See :ref:`hpxmllocations` for descriptions.
+         See :ref:`hpxml_locations` for descriptions.
   .. [#] FuelType choices are "natural gas", "fuel oil", "propane", "electricity", "wood", or "wood pellets".
 
 If a cooking range is specified, a single oven is also entered as a ``/HPXML/Building/BuildingDetails/Appliances/Oven``.
@@ -2898,7 +2899,7 @@ Each ceiling fan is entered as a ``/HPXML/Building/BuildingDetails/Lighting/Ceil
   ``Count``                                                              integer              > 0          Yes                 Number of similar ceiling fans
   =====================================================================  =======  ==========  ===========  ========  ========  ==============================
 
-.. _hpxmllocations:
+.. _hpxml_locations:
 
 HPXML Locations
 ---------------
