@@ -42,7 +42,7 @@
         </BuildingConstruction>
         <extension>
           <AdditionalProperties>
-            <ParentHPXMLFile>03_BaseCase_CZ4A_BaltimoreMD.xml</ParentHPXMLFile>
+            <ParentHPXMLFile>03_BaseCase_CZ7_DuluthMN.xml</ParentHPXMLFile>
           </AdditionalProperties>
         </extension>
       </BuildingSummary>

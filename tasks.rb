@@ -125,8 +125,10 @@ def create_test_hpxmls
     'RESNET_Tests/4.7_Multi_Climate/10_DuctsInAttic_CZ4A_BaltimoreMD.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ4A_BaltimoreMD.xml',
     'RESNET_Tests/4.7_Multi_Climate/10_DuctsInAttic_CZ7_DuluthMN.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ7_DuluthMN.xml',
     'RESNET_Tests/4.7_Multi_Climate/11_NoMechVent_CZ7_DuluthMN.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ7_DuluthMN.xml',
-    'RESNET_Tests/4.7_Multi_Climate/12_NoMechVentDuctsInAttic_CZ7_DuluthMN.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ4A_BaltimoreMD.xml',
-    'RESNET_Tests/4.7_Multi_Climate/13_HeatPump_CZ4A_BaltimoreMD.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ7_DuluthMN.xml',
+    'RESNET_Tests/4.7_Multi_Climate/12_NoMechVentDuctsInAttic_CZ7_DuluthMN.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ7_DuluthMN.xml',
+    'RESNET_Tests/4.7_Multi_Climate/13_HeatPump_CZ3C_SanFranCA.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ3C_SanFranCA.xml',
+    'RESNET_Tests/4.7_Multi_Climate/13_HeatPump_CZ4A_BaltimoreMD.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ4A_BaltimoreMD.xml',
+    'RESNET_Tests/4.7_Multi_Climate/13_HeatPump_CZ7_DuluthMN.xml' => 'RESNET_Tests/4.7_Multi_Climate/03_BaseCase_CZ7_DuluthMN.xml',
     'RESNET_Tests/Other_HERS_AutoGen_IAD_Home/01-L100.xml' => 'RESNET_Tests/4.2_HERS_AutoGen_Reference_Home/01-L100.xml',
     'RESNET_Tests/Other_HERS_AutoGen_IAD_Home/02-L100.xml' => 'RESNET_Tests/4.2_HERS_AutoGen_Reference_Home/02-L100.xml',
     'RESNET_Tests/Other_HERS_AutoGen_IAD_Home/03-L304.xml' => 'RESNET_Tests/4.2_HERS_AutoGen_Reference_Home/03-L304.xml',
@@ -1877,17 +1879,33 @@ def set_hpxml_heat_pumps(hpxml_file, hpxml_bldg)
                               charge_defect_ratio: charge_defect_ratio)
   elsif hpxml_file.include?('Multi_Climate') && hpxml_file.include?('HeatPump')
     hpxml_bldg.heat_pumps.clear
+    if hpxml_file.include?('SanFranCA')
+      cooling_capacity = 19000
+      heating_capacity = 19000
+      heating_capacity_17F = 13110
+      backup_heating_capacity = 17000
+    elsif hpxml_file.include?('BaltimoreMD')
+      cooling_capacity = 31000
+      heating_capacity = 31000
+      heating_capacity_17F = 21390
+      backup_heating_capacity = 31000
+    elsif hpxml_file.include?('DuluthMN')
+      cooling_capacity = 22500
+      heating_capacity = 22500
+      heating_capacity_17F = 15530
+      backup_heating_capacity = 42000
+    end
     hpxml_bldg.heat_pumps.add(id: "HeatPump#{hpxml_bldg.heat_pumps.size + 1}",
                               distribution_system_idref: 'HVACDistribution1',
                               heat_pump_type: HPXML::HVACTypeHeatPumpAirToAir,
                               heat_pump_fuel: HPXML::FuelTypeElectricity,
                               compressor_type: HPXML::HVACCompressorTypeSingleStage,
-                              cooling_capacity: 25000,
-                              heating_capacity: 31000,
-                              heating_capacity_17F: 21390,
+                              cooling_capacity: cooling_capacity,
+                              heating_capacity: heating_capacity,
+                              heating_capacity_17F: heating_capacity_17F,
                               backup_type: HPXML::HeatPumpBackupTypeIntegrated,
                               backup_heating_fuel: HPXML::FuelTypeElectricity,
-                              backup_heating_capacity: -1,
+                              backup_heating_capacity: backup_heating_capacity,
                               backup_heating_efficiency_percent: 1.0,
                               fraction_heat_load_served: 1,
                               fraction_cool_load_served: 1,
