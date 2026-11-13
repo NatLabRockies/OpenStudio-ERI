@@ -541,13 +541,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       Model.add_output_variable(model, key_value: '*', variable_name: 'Zone Mean Air Temperature', reporting_frequency: args[:timeseries_frequency])
 
       # For reporting temperature-scheduled spaces timeseries temperatures.
-      keys = [HPXML::LocationOtherHeatedSpace,
-              HPXML::LocationOtherMultifamilyBufferSpace,
-              HPXML::LocationOtherNonFreezingSpace,
-              HPXML::LocationOtherHousingUnit,
-              HPXML::LocationExteriorWall,
-              HPXML::LocationUnderSlab]
-      keys.each do |key|
+      HPXML::scheduled_locations.each do |key|
         schedules = @model.getScheduleConstants.select { |sch| sch.additionalProperties.getFeatureAsString('ObjectType').to_s == key }
         next if schedules.empty?
 
@@ -1181,9 +1175,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
       end
 
       # Scheduled temperatures
-      [HPXML::LocationOtherHeatedSpace, HPXML::LocationOtherMultifamilyBufferSpace,
-       HPXML::LocationOtherNonFreezingSpace, HPXML::LocationOtherHousingUnit,
-       HPXML::LocationExteriorWall, HPXML::LocationUnderSlab].each do |sch_location|
+      HPXML::scheduled_locations.each do |sch_location|
         @model.getScheduleConstants.each do |schedule|
           next unless schedule.additionalProperties.getFeatureAsString('ObjectType').to_s == sch_location
 
@@ -2038,11 +2030,6 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
         data.delete_at(1) # Remove units, added to header data above
         data.delete_at(0) # Remove series name, added to header data above
 
-        # DView requires a units string to display a variable, but some EnergyPlus output
-        # variables (like Runtime Fractions) don't have units. So we specify them as
-        # unitless for DView.
-        header_data[-1].map! { |units| units.empty? ? 'unitless' : units }
-
         # Apply daylight savings
         if args[:timeseries_frequency] == EPlus::TimeseriesFrequencyTimestep || args[:timeseries_frequency] == EPlus::TimeseriesFrequencyHourly
           if @hpxml_bldgs[0].dst_observed
@@ -2326,6 +2313,7 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
 
       keys << col['Variable'].split(':')[0..-2].join(':')
       units = col['Units']
+      units = 'unitless' if units.empty?
     end
 
     return keys, units
@@ -2346,7 +2334,9 @@ class ReportSimulationOutput < OpenStudio::Measure::ReportingMeasure
     timeseries_data['Cols'].each do |col|
       next unless col['Variable'] == meter_name
 
-      return col['Units']
+      units = col['Units']
+      units = 'unitless' if units.empty?
+      return units
     end
 
     return

@@ -6,11 +6,13 @@ __Features__
 - Updates garage ventilation rate to be SLA=1/150 (same as a vented crawlspace).
 - To accommodate electric furnaces/boilers, allows heating efficiency with units of "Percent" as an alternative to "AFUE"; the two units are modeled identically.
 - Adds min/max value warnings for clothes washer and dishwasher label inputs (e.g., `LabelElectricRate` and `LabelGasRate`).
+- Allows batteries to be located in multifamily spaces; these locations are modeled as outside, so battery heat gains are not assigned to the dwelling unit.
 
 __Bugfixes__
 - **Breaking change**: Prevent possible error if heat pump water heater in confined space with very small containment volume; minimum allowed volume now 32 ft3.
 - **Breaking change**: Heat pump water heater `EnergyFactor`/`UniformEnergyFactor` must now be >= 1.45 (previously > 1).
 - Fixes heat pump water heater modeled COP (derived from EF/UEF).
+- Fixes fan energy for variable-speed air conditioners and heat pumps; now uses continuous speed control (except when cycling on/off).
 - Fixes ERV supply outlet enthalpy calculation used to calculate latent effectiveness.
 - Removes duplicated ceiling/floor internal mass surfaces between conditioned stories.
 - Fixes heat gain from occupants; heat gains from appliances, lighting, etc. are unaffected.

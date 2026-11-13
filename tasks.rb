@@ -3315,6 +3315,7 @@ def create_sample_hpxmls
       end
     end
     hpxml_bldg.water_heating_systems.each do |dhw_system|
+      dhw_system.location = HPXML::LocationConditionedSpace if dhw_system.location.nil?
       next unless dhw_system.tank_volume.nil?
 
       if dhw_system.water_heater_type == HPXML::WaterHeaterTypeStorage
