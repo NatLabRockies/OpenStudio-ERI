@@ -20,7 +20,7 @@ __Bugfixes__
 - Fixes order-dependent effective below-grade depth when collapsing similar foundation walls.
 - **Breaking change**: HVAC efficiencies must be paired by generation, i.e., SEER2 with EER2/HSPF2 or SEER with EER/HSPF; a mixed pair previously passed validation and could cause an EnergyPlus error.
 - Fixes a failed simulation being reported as an unrelated error (e.g., `TypeError` or `JSON::ParserError`); the workflow now stops with "Errors encountered. Aborting...".
-- Fixes fan energy when only heat pump backup heating is running (i.e., heat pump locked out due to temperature); workaround for E+ bug.
+- Fixes fan energy and duct losses when only heat pump backup heating is running (i.e., heat pump locked out due to temperature); workaround for E+ bug.
 - Fixes ground-source heat pump water flow rates when multiple attached to a shared geothermal loop.
 
 ## OpenStudio-ERI v1.12.0
