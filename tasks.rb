@@ -295,13 +295,11 @@ def get_standard_140_hpxml(hpxml_path)
 end
 
 def set_hpxml_header(hpxml_file, hpxml, hpxml_bldg, orig_parent)
-  if hpxml.header.xml_type.nil?
-    hpxml.header.xml_type = 'HPXML'
-    hpxml.header.xml_generated_by = 'tasks.rb'
-    hpxml.header.transaction = 'create'
-    hpxml.header.created_date_and_time = Time.new(2000, 1, 1, 0, 0, 0, '-07:00').strftime('%Y-%m-%dT%H:%M:%S%:z') # Hard-code to prevent diffs
-    hpxml_bldg.event_type = 'proposed workscope'
-  end
+  hpxml.header.xml_type = 'HPXML'
+  hpxml.header.xml_generated_by = 'tasks.rb'
+  hpxml.header.transaction = 'create'
+  hpxml.header.created_date_and_time = Time.new(2000, 1, 1, 0, 0, 0, '-07:00').strftime('%Y-%m-%dT%H:%M:%S%:z') # Hard-code to prevent diffs
+  hpxml_bldg.event_type = 'proposed workscope'
   if hpxml_file.include?('HERS_AutoGen') || hpxml_file.include?('HERS_Method') || hpxml_file.include?('Hot_Water')
     hpxml.header.apply_ashrae140_assumptions = nil
   end
